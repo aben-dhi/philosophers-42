@@ -1,6 +1,6 @@
 NAME	= philo
 
-SRCS	= philo.c utils/ft_atoi.c 
+SRCS	= philo.c utils/ft_atoi.c  utils/exit_error.c
 			
 OBJS	= $(SRCS:.c=.o)
 
