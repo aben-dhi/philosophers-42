@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aben-dhi <aben-dhi@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/03 11:20:29 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/08/16 18:49:35 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/02 21:46:47 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,17 @@ typedef struct s_philo
 	unsigned long	last_eat;
 }t_philo;
 
-int	ft_atoi(char *str);
-int	ft_args(int ac, char **av, t_data *data);
-void	exit_error(void);
+int				ft_atoi(char *str);
+int				exit_error(void);
+int				arg_check(char **arg);
+int				params(t_data *data, char **d);
+void			assign(t_philo *philo, t_data *d,
+					pthread_mutex_t *m1, pthread_mutex_t *m2);
+int				init(t_philo *philo, t_data *data);
+void			*routine(void *pp);
+void			function(t_philo *philo, t_data *data);
+void			destroy(t_philo *philo);
+unsigned long	get_time(void);
+int				free_p(t_philo *philo, pthread_mutex_t *mutex, t_data *data);
 
 #endif

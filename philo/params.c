@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   params.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aben-dhi <aben-dhi@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:42:04 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/02 18:30:11 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/02 21:42:28 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,15 @@ int	arg_check(char **arg)
 	int	j;
 
 	i = 1;
-	j = 0;
 	while (arg[i])
 	{
+		j = 0;
 		while (arg[i][j])
 		{
-			if (arg[i][j] < '0' || arg[i][j] > '9')
-				return (0);
+			if (arg[i][0] == '+')
+				j++;
+			if ((arg[i][j] < '0' || arg[i][j] > '9'))
+				return (1);
 			j++;
 		}
 		i++;
@@ -32,7 +34,7 @@ int	arg_check(char **arg)
 	return (0);
 }
 
-int params(t_data *data, char *d)
+int	params(t_data *data, char **d)
 {
 	if (arg_check(d))
 		return (exit_error());
@@ -42,12 +44,13 @@ int params(t_data *data, char *d)
 	data->die = ft_atoi(d[2]);
 	data->eat = ft_atoi(d[3]);
 	data->sleep = ft_atoi(d[4]);
-	if (data->philo < 2 || data->die < 0 || data->eat < 0 || data->sleep < 0)
+	if (data->philo <= 0 || data->die <= 0
+		|| data->eat <= 0 || data->sleep <= 0)
 		return (1);
 	if (d[5])
 	{
 		data->must_eat = ft_atoi(d[5]);
-		if (data->must_eat < 0)
+		if (data->must_eat <= 0)
 			return (1);
 	}
 	else
@@ -55,23 +58,24 @@ int params(t_data *data, char *d)
 	return (0);
 }
 
-int	assign (t_philo *philo, t_data *data, pthread_mutex_t *m1, pthread_mutex_t *m2)
+void	assign(t_philo *philo, t_data *d,
+	pthread_mutex_t m1, pthread_mutex_t *m2)
 {
 	int	i;
 
 	i = 0;
-	while (i < data->philo)
+	while (i < d->philo)
 	{
 		philo[i].eat = 0;
 		philo[i].id = i + 1;
-		philo[i].mutex = m1;
+		philo[i].fork1 = m1;
 		philo[i].print = m2;
-		philo[i].data = data;
+		philo[i].data = d;
 		i++;
 	}
 }
 
-int init(t_philo *philo, t_data *data)
+int	init(t_philo *philo, t_data *data)
 {
 	pthread_mutex_t	*m1;
 	pthread_mutex_t	m2;
@@ -79,14 +83,12 @@ int init(t_philo *philo, t_data *data)
 
 	i = 0;
 	m1 = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * data->philo);
-	if (!m1 || !data->philo)
+	if (!m1 || !philo)
 		return (free_p(philo, m1, data));
 	while (i < data->philo)
-	{
-		if (pthread_mutex_init(&m1[i], NULL))
+		if (pthread_mutex_init(&m1[i++], 0))
 			return (free_p(philo, m1, data));
-	}
-	if (pthread_mutex_init(&m2, NULL))
+	if (pthread_mutex_init(&m2, 0))
 		return (free_p(philo, m1, data));
 	assign(philo, data, m1, &m2);
 	return (0);

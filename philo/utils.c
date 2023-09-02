@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aben-dhi <aben-dhi@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:48:03 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/02 18:30:32 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/02 19:24:23 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,17 @@ void	destroy(t_philo *philo)
 		pthread_mutex_destroy(&philo->mutex[i]);
 		i++;
 	}
-	pthread_mutex_destroy(&philo->print);
 }
 
-unsigned long get_time(void)
+unsigned long	get_time(void)
 {
-	struct timeval time;
+	struct timeval	time;
 
 	gettimeofday(&time, NULL);
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 }
 
-int free_p(t_philo *philo, pthread_mutex_t *mutex, t_data *data)
+int	free_p(t_philo *philo, pthread_mutex_t *mutex, t_data *data)
 {
 	if (philo)
 		free(philo);
@@ -77,5 +76,5 @@ int	exit_error(void)
 	printf("Error\n");
 	printf("Usage: ./philo number_of_philosophers time_to_die time_to_eat ");
 	printf("time_to_sleep [number_of_times_each_philosopher_must_eat]\n");
-	exit(1);
+	return (1);
 }
