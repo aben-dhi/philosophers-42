@@ -6,7 +6,7 @@
 /*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/03 11:20:29 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/02 21:46:47 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/03 20:11:41 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ typedef struct s_philo
 	int				id;
 	int				eat;
 	t_data			*data;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	fork1;
+	pthread_mutex_t	*fork2;
 	pthread_mutex_t	*print;
 	unsigned long	last_eat;
 }t_philo;
@@ -45,7 +46,7 @@ int				exit_error(void);
 int				arg_check(char **arg);
 int				params(t_data *data, char **d);
 void			assign(t_philo *philo, t_data *d,
-					pthread_mutex_t *m1, pthread_mutex_t *m2);
+					pthread_mutex_t m1, pthread_mutex_t p);
 int				init(t_philo *philo, t_data *data);
 void			*routine(void *pp);
 void			function(t_philo *philo, t_data *data);

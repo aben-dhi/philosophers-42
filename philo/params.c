@@ -6,7 +6,7 @@
 /*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:42:04 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/02 21:42:28 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/03 20:13:55 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	params(t_data *data, char **d)
 }
 
 void	assign(t_philo *philo, t_data *d,
-	pthread_mutex_t m1, pthread_mutex_t *m2)
+	pthread_mutex_t m1, pthread_mutex_t p)
 {
 	int	i;
 
@@ -69,7 +69,8 @@ void	assign(t_philo *philo, t_data *d,
 		philo[i].eat = 0;
 		philo[i].id = i + 1;
 		philo[i].fork1 = m1;
-		philo[i].print = m2;
+		philo[i].fork2 = &philo[(i + 1) % d->philo].fork1;
+		philo[i].print = &p;
 		philo[i].data = d;
 		i++;
 	}
@@ -77,19 +78,21 @@ void	assign(t_philo *philo, t_data *d,
 
 int	init(t_philo *philo, t_data *data)
 {
-	pthread_mutex_t	*m1;
-	pthread_mutex_t	m2;
+	pthread_mutex_t	m1;
+	pthread_mutex_t	p;
 	int				i;
 
 	i = 0;
-	m1 = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * data->philo);
+	m1 = (pthread_mutex_t)malloc(sizeof(pthread_mutex_t) * data->philo);
 	if (!m1 || !philo)
-		return (free_p(philo, m1, data));
+	{
+		return (free_p(philo, &m1, data));
+	}
 	while (i < data->philo)
-		if (pthread_mutex_init(&m1[i++], 0))
-			return (free_p(philo, m1, data));
-	if (pthread_mutex_init(&m2, 0))
-		return (free_p(philo, m1, data));
-	assign(philo, data, m1, &m2);
+		if (pthread_mutex_init(m1[i++], 0))
+			return (free_p(philo, &m1, data));
+	if (pthread_mutex_init(&p, 0))
+		return (free_p(philo, &m1, data));
+	assign(philo, data, m1, p);
 	return (0);
 }
