@@ -6,7 +6,7 @@
 /*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/03 11:20:25 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/03 20:10:47 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/10 22:57:29 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,14 @@ void	*routine(void *pp)
 		printf("%lu %d has taken a fork\n",
 			get_time() - philo->data->start, philo->id);
 		printf("%lu %d is eating\n", get_time() - philo->data->start, philo->id);
+		if (philo->data->must_eat != -1 && philo->eat >= philo->data->must_eat) {
+            pthread_mutex_unlock(&philo->fork1);
+            pthread_mutex_unlock(philo->fork2);
+            return NULL;  // Return from the thread
+        }
 		philo->eat++;
 		if (philo->eat == philo->data->must_eat)
-			philo->data->all_eat++;
+            philo->data->all_eat++;
 		usleep(philo->data->eat * 1000);
 		philo->last_eat = get_time();
 		pthread_mutex_unlock(&philo->fork1);
@@ -54,9 +59,8 @@ void	function(t_philo *philo, t_data *data)
 	{
 		if (philo[i].data->all_eat == philo[i].data->philo)
 		{
-			// destroy(philo);
-			free_p(philo, &philo->fork1, data);
-			free_p(0, philo->fork2, 0);
+			destroy(philo);
+			free_p(philo, NULL, data);
 			return ;
 		}
 		if (get_time() - philo[i].last_eat > (unsigned long)data->die)
@@ -65,11 +69,17 @@ void	function(t_philo *philo, t_data *data)
 			pthread_mutex_lock(philo->print);
 			printf("%lu %d died\n",
 				get_time() - philo[i].data->start, philo[i].id);
-			// destroy(philo);
-			free_p(philo, &philo->fork1, data);
-			free_p(0, philo->fork2, 0);
+			destroy(philo);
+			free_p(philo, NULL, data);
 			return ;
 		}
+		if (data->must_eat != -1 && philo[i].eat == data->must_eat)
+		{
+			i = (i + 1) % data->philo;
+			continue ;
+		}
+		if (data->philo == 1)
+			pthread_mutex_unlock(philo->print);
 		i = (i + 1) % data->philo;
 		usleep(500);
 	}

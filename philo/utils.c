@@ -6,7 +6,7 @@
 /*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:48:03 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/03 13:44:33 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/10 22:23:32 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	destroy(t_philo *philo)
 	i = 0;
 	while (i < philo->data->philo)
 	{
-		pthread_mutex_destroy(&philo->fork1[i]);
-		pthread_mutex_destroy(&philo->fork2[i]);
+		pthread_mutex_destroy(&philo[i].fork1);
+		pthread_mutex_destroy(philo[i].fork2);
 		i++;
 	}
 }

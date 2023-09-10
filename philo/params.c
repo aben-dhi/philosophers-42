@@ -6,11 +6,23 @@
 /*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:42:04 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/03 20:13:55 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/10 22:26:53 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+// void	my_usleep(size_t start_time, int time, t_philo *philo)
+// {
+// 	pthread_mutex_lock(&philo->print);
+// 	while (get_time() - start_time < (size_t)time && philo->print)
+// 	{
+// 		pthread_mutex_unlock(&philo->print);
+// 		usleep(100);
+// 		pthread_mutex_lock(&philo->print);
+// 	}
+// 	pthread_mutex_unlock(&philo->print);
+// }
 
 int	arg_check(char **arg)
 {
@@ -59,7 +71,7 @@ int	params(t_data *data, char **d)
 }
 
 void	assign(t_philo *philo, t_data *d,
-	pthread_mutex_t m1, pthread_mutex_t p)
+	pthread_mutex_t *m1, pthread_mutex_t p)
 {
 	int	i;
 
@@ -68,31 +80,59 @@ void	assign(t_philo *philo, t_data *d,
 	{
 		philo[i].eat = 0;
 		philo[i].id = i + 1;
-		philo[i].fork1 = m1;
-		philo[i].fork2 = &philo[(i + 1) % d->philo].fork1;
+		philo[i].fork1 = m1[i];
+		philo[i].fork2 = &m1[(i + 1) % d->philo];
 		philo[i].print = &p;
 		philo[i].data = d;
 		i++;
 	}
 }
 
+// int	init(t_philo *philo, t_data *data)
+// {
+// 	pthread_mutex_t	m1;
+// 	pthread_mutex_t	p;
+// 	int				i;
+
+// 	i = 0;
+// 	m1 = (pthread_mutex_t)malloc(sizeof(pthread_mutex_t) * data->philo);
+// 	if (!m1 || !philo)
+// 	{
+// 		return (free_p(philo, &m1, data));
+// 	}
+// 	while (i < data->philo)
+// 		if (pthread_mutex_init(m1[i++], 0))
+// 			return (free_p(philo, &m1, data));
+// 	if (pthread_mutex_init(&p, 0))
+// 		return (free_p(philo, &m1, data));
+// 	assign(philo, data, m1, p);
+// 	return (0);
+// }
+
+// Declare an array of mutexes
+// Initialize mutexes in a loop
+// Pass the array of mutexes, not a pointer
+// Pass the array of mutexes, not a pointer
+
 int	init(t_philo *philo, t_data *data)
 {
-	pthread_mutex_t	m1;
+	pthread_mutex_t	*m1; 
 	pthread_mutex_t	p;
 	int				i;
 
 	i = 0;
-	m1 = (pthread_mutex_t)malloc(sizeof(pthread_mutex_t) * data->philo);
+	m1 = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * data->philo);
 	if (!m1 || !philo)
-	{
-		return (free_p(philo, &m1, data));
-	}
+		return (free_p(philo, m1, data));
 	while (i < data->philo)
-		if (pthread_mutex_init(m1[i++], 0))
-			return (free_p(philo, &m1, data));
-	if (pthread_mutex_init(&p, 0))
-		return (free_p(philo, &m1, data));
+	{
+		if (pthread_mutex_init(&m1[i], NULL) != 0)
+			return (free_p(philo, m1, data)); 
+		i++;
+	}
+
+	if (pthread_mutex_init(&p, NULL) != 0)
+		return (free_p(philo, m1, data));
 	assign(philo, data, m1, p);
 	return (0);
 }
