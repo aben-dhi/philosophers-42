@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   params.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aben-dhi <aben-dhi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aben-dhi <aben-dhi@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:42:04 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/10 22:26:53 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/15 01:21:14 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 // void	my_usleep(size_t start_time, int time, t_philo *philo)
 // {
-// 	pthread_mutex_lock(&philo->print);
+// 	pthread_mutex_lock(philo->print);
 // 	while (get_time() - start_time < (size_t)time && philo->print)
 // 	{
-// 		pthread_mutex_unlock(&philo->print);
+// 		pthread_mutex_unlock(philo->print);
 // 		usleep(100);
-// 		pthread_mutex_lock(&philo->print);
+// 		pthread_mutex_lock(philo->print);
 // 	}
-// 	pthread_mutex_unlock(&philo->print);
+// 	pthread_mutex_unlock(philo->print);
 // }
 
 int	arg_check(char **arg)
@@ -71,7 +71,7 @@ int	params(t_data *data, char **d)
 }
 
 void	assign(t_philo *philo, t_data *d,
-	pthread_mutex_t *m1, pthread_mutex_t p)
+	pthread_mutex_t *m, pthread_mutex_t *p)
 {
 	int	i;
 
@@ -80,9 +80,9 @@ void	assign(t_philo *philo, t_data *d,
 	{
 		philo[i].eat = 0;
 		philo[i].id = i + 1;
-		philo[i].fork1 = m1[i];
-		philo[i].fork2 = &m1[(i + 1) % d->philo];
-		philo[i].print = &p;
+		philo[i].fork = m;
+		// philo[i].fork2 = &m1[(i + 1) % d->philo];
+		philo[i].print = p;
 		philo[i].data = d;
 		i++;
 	}
@@ -116,23 +116,25 @@ void	assign(t_philo *philo, t_data *d,
 
 int	init(t_philo *philo, t_data *data)
 {
-	pthread_mutex_t	*m1; 
+	pthread_mutex_t	*m; 
 	pthread_mutex_t	p;
 	int				i;
 
 	i = 0;
-	m1 = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * data->philo);
-	if (!m1 || !philo)
-		return (free_p(philo, m1, data));
+	m = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * data->philo);
+	if (!m || !philo)
+		return (free_p(philo, m, data));
 	while (i < data->philo)
 	{
-		if (pthread_mutex_init(&m1[i], NULL) != 0)
-			return (free_p(philo, m1, data)); 
+		if (pthread_mutex_init(&m[i], NULL) != 0)
+			return (free_p(philo, m, data)); 
 		i++;
 	}
 
 	if (pthread_mutex_init(&p, NULL) != 0)
-		return (free_p(philo, m1, data));
-	assign(philo, data, m1, p);
+		return (free_p(philo, m, data));
+	if (pthread_mutex_init(&philo->check, NULL) != 0)
+		return (free_p(philo, m, data));
+	assign(philo, data, m, &p);
 	return (0);
 }
