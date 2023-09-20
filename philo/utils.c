@@ -6,7 +6,7 @@
 /*   By: aben-dhi <aben-dhi@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 17:48:03 by aben-dhi          #+#    #+#             */
-/*   Updated: 2023/09/15 00:42:40 by aben-dhi         ###   ########.fr       */
+/*   Updated: 2023/09/20 20:24:00 by aben-dhi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,33 @@ void	destroy(t_philo *philo)
 	i = 0;
 	while (i < philo->data->philo)
 	{
-		pthread_mutex_destroy(&philo->fork[i]);
+		pthread_mutex_destroy(&philo[i].fork1);
 		i++;
 	}
 }
 
-unsigned long	get_time(void)
+long long	get_time(void)
 {
 	struct timeval	time;
+	long long		secs;
+	long long		usecs;
 
 	gettimeofday(&time, NULL);
-	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	secs = (long long)time.tv_sec;
+	usecs = (long long)time.tv_usec;
+	return ((secs * 1000) + (usecs / 1000));
 }
 
-int	free_p(t_philo *philo, pthread_mutex_t *mutex, t_data *data)
-{
-	if (philo)
-		free(philo);
-	if (mutex)
-		free(mutex);
-	if (data)
-		free(data);
-	return (1);
-}
+// int	free_p(t_philo *philo, pthread_mutex_t *mutex, t_data *data)
+// {
+// 	if (philo)
+// 		free(philo);
+// 	if (mutex)
+// 		free(mutex);
+// 	if (data)
+// 		free(data);
+// 	return (1);
+// }
 
 int	ft_atoi(char *str)
 {
